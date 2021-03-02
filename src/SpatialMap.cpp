@@ -1,1 +1,1 @@
-#include "../include/SpatialMap.h"
+#include <SpatialMap.hpp>

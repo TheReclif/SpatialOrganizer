@@ -1,4 +1,4 @@
-#include "../include/SingleThreadedSpatialHashSet.h"
+#include "SingleThreadedSpatialHashSet.h"
 
 namespace SpatialOrg
 {

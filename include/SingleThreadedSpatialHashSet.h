@@ -51,7 +51,7 @@ namespace SpatialOrg
 				bool occupied = false;
 				Key key;
 			};
-			using MemContainer = std::vector<Cell, std::allocator_traits<Allocator>::rebind_alloc<Cell>>;
+			using MemContainer = std::vector<Cell, typename std::template allocator_traits<Allocator>::template rebind_alloc<Cell>>;
 		private:
 			unsigned int incrementSlotCount;
 			std::size_t elementsCount;
@@ -61,6 +61,6 @@ namespace SpatialOrg
 	}
 }
 
-#include "../src/SingleThreadedSpatialHashSet.inl"
+#include "SingleThreadedSpatialHashSet.inl"
 
 #endif

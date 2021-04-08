@@ -4,13 +4,12 @@ project(SpatialOrganizer VERSION 1.0.0 LANGUAGES CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-option(BUILD_TESTS "Build tests" false)
+option(BUILD_TESTS "Build tests" OFF)
 
 find_package(GTest CONFIG REQUIRED)
 
 add_library(SpatialOrganizer
-	src/SingleThreadedSpatialHashSet.inl
-	src/Mock.cpp
+	"src/SpatialOrganizer.cpp"
 )
 
 target_link_libraries(SpatialOrganizer PUBLIC GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)

@@ -6,14 +6,14 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(BUILD_TESTS "Build tests" false)
 
-add_library(SpatialOrganizer
-	"src/SpatialMap.cpp"
+find_package(GTest CONFIG REQUIRED)
 
-	"include/SpatialMap.hpp"
-	"include/ConcurrentSpatialMap.hpp"
-	"include/ConcurrentHashMap.hpp"
-	"include/ConcurrentList.hpp"
+add_library(SpatialOrganizer
+	src/SingleThreadedSpatialHashSet.inl
+	src/Mock.cpp
 )
+
+target_link_libraries(SpatialOrganizer PUBLIC GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
 
 target_include_directories(SpatialOrganizer PUBLIC include)
 

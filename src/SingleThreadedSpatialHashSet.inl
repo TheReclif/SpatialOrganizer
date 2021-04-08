@@ -60,5 +60,58 @@ namespace SpatialOrg
 
 			return false;
 		}
+
+		template<class Key, class Hasher, class Allocator>
+		void SpatialHashSet<Key, Hasher, Allocator>::rehash(const unsigned int newSlotCount)
+		{
+			if (newSlotCount == 0)
+			{
+				throw std::invalid_argument("newSlotCount must be greater than 0");
+			}
+			if (newSlotCount < capacity())
+			{
+				throw std::invalid_argument("newSlotCount must be greater than or equal the set's capacity");
+			}
+			MemContainer newMem(newSlotCount);
+			for (const auto& x : memory)
+			{
+				if (!x.occupied)
+				{
+					continue;
+				}
+
+				auto hash = hasher(x.key) % newSlotCount;
+				do
+				{
+					auto& slot = newMem[hash];
+					if (!slot.occupied)
+					{
+						slot = x;
+						hash = newSlotCount;
+					}
+					++hash;
+				} while (hash < newSlotCount);
+
+				if (hash == newSlotCount)
+				{
+					newMem.clear();
+					newMem.shrink_to_fit();
+					rehash(newSlotCount + incrementSlotCount);
+					return;
+				}
+			}
+		}
+
+		template<class Key, class Hasher, class Allocator>
+		std::size_t SpatialHashSet<Key, Hasher, Allocator>::size() const
+		{
+			return memory.size();
+		}
+
+		template<class Key, class Hasher, class Allocator>
+		std::size_t SpatialHashSet<Key, Hasher, Allocator>::capacity() const
+		{
+			return memory.capacity();
+		}
 	}
 }

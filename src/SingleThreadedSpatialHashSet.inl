@@ -6,14 +6,19 @@ namespace SpatialOrg
 	{
 		template<class Key, class Hasher, class Allocator>
 		SpatialHashSet<Key, Hasher, Allocator>::SpatialHashSet(const unsigned int defaultSlotCount)
-			: hasher(), memory(defaultSlotCount), incrementSlotCount(defaultSlotCount)
+			: hasher(), memory(defaultSlotCount), incrementSlotCount(defaultSlotCount), elementsCount(0)
 		{
 		}
 
 		template<class Key, class Hasher, class Allocator>
 		bool SpatialHashSet<Key, Hasher, Allocator>::tryInsert(Key&& key)
 		{
-			auto hash = hasher(key) % size();
+			if (size() == capacity())
+			{
+				rehash(capacity() + incrementSlotCount);
+			}
+
+			auto hash = hasher(key) % capacity();
 			do
 			{
 				auto& cell = memory[hash];
@@ -21,6 +26,7 @@ namespace SpatialOrg
 				{
 					cell.occupied = true;
 					cell.key = std::move(key);
+					++elementsCount;
 					return true;
 				}
 				else
@@ -31,16 +37,16 @@ namespace SpatialOrg
 					}
 				}
 				++hash;
-			} while (hash < size());
+			} while (hash < capacity());
 
-			rehash(size() + incrementSlotCount);
+			rehash(capacity() + incrementSlotCount);
 			return tryInsert(std::move(key));
 		}
 
 		template<class Key, class Hasher, class Allocator>
 		bool SpatialHashSet<Key, Hasher, Allocator>::isKeyPresent(const Key& key) const
 		{
-			auto hash = hasher(key) % size();
+			auto hash = hasher(key) % capacity();
 			do
 			{
 				auto& cell = memory[hash];
@@ -56,7 +62,7 @@ namespace SpatialOrg
 					return false;
 				}
 				++hash;
-			} while (hash < size());
+			} while (hash < capacity());
 
 			return false;
 		}
@@ -72,6 +78,7 @@ namespace SpatialOrg
 			{
 				throw std::invalid_argument("newSlotCount must be greater than or equal the set's capacity");
 			}
+
 			MemContainer newMem(newSlotCount);
 			for (const auto& x : memory)
 			{
@@ -100,12 +107,28 @@ namespace SpatialOrg
 					return;
 				}
 			}
+
+			memory = std::move(newMem);
+		}
+
+		template<class Key, class Hasher, class Allocator>
+		void SpatialHashSet<Key, Hasher, Allocator>::clear()
+		{
+			if (size() == 0)
+			{
+				return;
+			}
+			for (auto& x : memory)
+			{
+				x.occupied = false;
+			}
+			elementsCount = 0;
 		}
 
 		template<class Key, class Hasher, class Allocator>
 		std::size_t SpatialHashSet<Key, Hasher, Allocator>::size() const
 		{
-			return memory.size();
+			return elementsCount;
 		}
 
 		template<class Key, class Hasher, class Allocator>

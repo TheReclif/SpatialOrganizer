@@ -36,6 +36,8 @@ namespace SpatialOrg
 			/// @brief Performs a rehashing operation. The resulting capacity may be greater if the rehashing with the current amount of elements is not possible.
 			/// @param newSlotCount Minimum amount of slots for the container to have after the operation
 			void rehash(const unsigned int newSlotCount);
+			/// @brief Resets the slots. size() becomes 0 afterwards.
+			void clear();
 
 			/// @brief Returns the amount of elements
 			/// @return Amount of container elements
@@ -52,6 +54,7 @@ namespace SpatialOrg
 			using MemContainer = std::vector<Cell, std::allocator_traits<Allocator>::rebind_alloc<Cell>>;
 		private:
 			unsigned int incrementSlotCount;
+			std::size_t elementsCount;
 			Hasher hasher;
 			MemContainer memory;
 		};
